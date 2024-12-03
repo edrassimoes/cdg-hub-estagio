@@ -2,6 +2,23 @@ import cv2
 import numpy as np
 
 def ajustar_imagem(img, brilho, saturacao, contraste, blur):
+    """
+    Ajusta os parâmetros de brilho, saturação, contraste e desfoque de uma imagem.
+
+    Esta função converte a imagem de BGR para HSV para ajustar o brilho e a saturação,
+    e depois converte de volta para BGR. Em seguida, aplica um ajuste de contraste utilizando
+    a função convertScaleAbs e, se solicitado, aplica um desfoque gaussiano na imagem.
+
+    Parâmetros:
+    img (ndarray): A imagem de entrada no formato BGR.
+    brilho (int): O valor de ajuste de brilho. Pode ser negativo para diminuir o brilho.
+    saturacao (int): O valor de ajuste de saturação. Pode ser negativo para diminuir a saturação.
+    contraste (float): O fator de contraste a ser aplicado, onde 1.0 é o valor original.
+    blur (int): O raio do desfoque gaussiano a ser aplicado. Se maior que 0, o desfoque é aplicado.
+
+    Retorna:
+    ndarray: A imagem ajustada após as modificações de brilho, saturação, contraste e desfoque.
+    """
 
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     h, s, v = cv2.split(hsv)
@@ -28,6 +45,15 @@ def ajustar_imagem(img, brilho, saturacao, contraste, blur):
     return ajustada
 
 def on_change(val):
+    """
+    Função de callback para ser chamada sempre que um controle deslizante (trackbar) for alterado.
+
+    Essa função captura os valores ajustados nos controles de brilho, saturação, contraste e desfoque,
+    chama a função `ajustar_imagem` para aplicar essas modificações e exibe a imagem resultante.
+
+    Parâmetros:
+    val (int): Valor do controle deslizante (não utilizado diretamente, mas necessário para o callback).
+    """
     brilho = cv2.getTrackbarPos("Brilho", "Editor") - 100
     saturacao = cv2.getTrackbarPos("Saturacao", "Editor") - 100
     contraste = cv2.getTrackbarPos("Contraste", "Editor") / 50.0
@@ -37,6 +63,7 @@ def on_change(val):
     cv2.imshow("Editor", img_ajustada)
 
 # Carregar imagem
+# caminho = input('Digite o caminho para onde a imagem se encontra: ')
 caminho = 'imagens/cachorro.jpg'
 img_original = cv2.imread(caminho)
 if img_original is None:
