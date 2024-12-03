@@ -13,7 +13,7 @@ Essas funcionalidades são aplicadas em tempo real, e a imagem é atualizada con
 
 ## Requisitos
 
-- Python 3.x
+- Python 3
 - OpenCV (`opencv-python`)
 - NumPy (`numpy`)
 
