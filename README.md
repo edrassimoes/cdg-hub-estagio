@@ -1,4 +1,4 @@
-# 🖼 Editor de Imagem com OpenCV
+# 🖼 Editor de imagens com OpenCV
 
 Este repositório contém um código Python que permite ajustar a **imagem** em tempo real utilizando a biblioteca **OpenCV**. O código permite modificar os parâmetros de brilho, saturação, contraste e desfoque de uma imagem carregada, com a interação do usuário por meio de **trackbars**.
 
