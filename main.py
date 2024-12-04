@@ -62,7 +62,7 @@ def on_change(val):
     img_ajustada = ajustar_imagem(img_original, brilho, saturacao, contraste, blur)
     cv2.imshow("Editor", img_ajustada)
 
-# Carregar imagem
+# Carregar uma imagem
 # caminho = input('Digite o caminho para onde a imagem se encontra: ')
 caminho = 'imagens/cachorro.jpg'
 img_original = cv2.imread(caminho)
@@ -70,22 +70,22 @@ if img_original is None:
     print("Imagem nao encontrada!")
     exit()
 
-# Create window before trackbars
+# Cria a janela
 cv2.namedWindow("Editor")
 
-# Create all trackbars without value pointers
+# Crie todas as barras deslizantes sem ponteiros de valor
 cv2.createTrackbar("Brilho", "Editor", 0, 200, on_change)
 cv2.createTrackbar("Saturacao", "Editor", 0, 200, on_change)
 cv2.createTrackbar("Contraste", "Editor", 0, 100, on_change)
 cv2.createTrackbar("Desfoque", "Editor", 0, 20, on_change)
 
-# Set initial values for trackbars
+# Determina valores iniciais para as trackbars
 cv2.setTrackbarPos("Brilho", "Editor", 100)
 cv2.setTrackbarPos("Saturacao", "Editor", 100)
 cv2.setTrackbarPos("Contraste", "Editor", 50)
 cv2.setTrackbarPos("Desfoque", "Editor", 0)
 
-# Call on_change to initialize the image
+# Chama a função on_change, inicializando a imagem
 on_change(0)
 
 # Loop principal
