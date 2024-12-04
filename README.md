@@ -64,10 +64,6 @@ import cv2
 import numpy as np
 
 def ajustar_imagem(img, brilho, saturacao, contraste, blur):
-    """
-    Ajusta os parâmetros de brilho, saturação, contraste e desfoque de uma imagem.
-    """
-
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     h, s, v = cv2.split(hsv)
 
@@ -93,9 +89,6 @@ def ajustar_imagem(img, brilho, saturacao, contraste, blur):
     return ajustada
 
 def on_change(val):
-    """
-    Função de callback para ser chamada sempre que um controle deslizante (trackbar) for alterado.
-    """
     brilho = cv2.getTrackbarPos("Brilho", "Editor") - 100
     saturacao = cv2.getTrackbarPos("Saturacao", "Editor") - 100
     contraste = cv2.getTrackbarPos("Contraste", "Editor") / 50.0
