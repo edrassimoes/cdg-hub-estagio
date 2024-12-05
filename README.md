@@ -1,99 +1,84 @@
-# 🖼 Editor de imagens com OpenCV
+# 🖼 Projeto de Efeitos de Imagem
 
-Este repositório contém um código Python que permite ajustar a **imagem** em tempo real utilizando a biblioteca **OpenCV**. O código permite modificar os parâmetros de brilho, saturação, contraste e desfoque de uma imagem carregada, com a interação do usuário por meio de **trackbars**.
+Este projeto permite a aplicação de diferentes efeitos de imagem, como ajuste de brilho, saturação, contraste e desfoque, usando a biblioteca OpenCV. A interface gráfica foi desenvolvida com Tkinter, permitindo a interação simples e intuitiva com os ajustes.
 
-## Funcionalidades
+---
+## Funcionalidades:
 
-- **Brilho**: Ajuste do brilho da imagem.
-- **Saturação**: Controle da saturação das cores.
-- **Contraste**: Modificação do contraste da imagem.
-- **Desfoque**: Aplicação de desfoque gaussiano (blur) na imagem.
+### Brilho
+O **brilho** ajusta a intensidade da luz em cada pixel da imagem. A faixa de ajuste vai de **-255 a +255**, onde:
+- **0** significa nenhum ajuste de brilho (imagem original).
+- **Valores negativos** escurecem a imagem, diminuindo a intensidade dos pixels.
+- **Valores positivos** clareiam a imagem, aumentando a intensidade dos pixels.
 
-Essas funcionalidades são aplicadas em tempo real, e a imagem é atualizada conforme o usuário interage com os controles.
+### Saturação
+A **saturação** controla a pureza das cores da imagem. A faixa de valores também vai de **0 a 255**, onde:
+- **0** resulta em uma imagem em tons de cinza (sem saturação).
+- **255** representa cores completamente saturadas, ou seja, cores mais vivas e intensas.
 
-## Requisitos
+### Contraste
+O **contraste** altera a diferença entre as partes mais claras e mais escuras da imagem. O contraste é ajustado usando um fator de multiplicação, onde:
+- **1.0** (ou o valor padrão de 50 na interface) representa nenhum ajuste de contraste.
+- **Valores maiores** aumentam a diferença entre os pixels claros e escuros, tornando a imagem visualmente mais dramática.
+- **Valores menores** suavizam o contraste, resultando em uma imagem com menos distinção entre as sombras e as luzes.
 
-- Python 3
-- OpenCV (`opencv-python`)
-- NumPy (`numpy`)
+### Desfoque (Blur)
+O **desfoque** é aplicado usando a técnica de **GaussianBlur**, que suaviza a imagem aplicando uma média ponderada dos pixels em uma vizinhança. A intensidade do desfoque é controlada por um valor entre **0 a 20**:
+- **0** significa sem desfoque (imagem original).
+- **Valores maiores** resultam em um desfoque maior, suavizando as transições e criando um efeito de suavização na imagem.
 
-### Instalação dos requisitos:
+---
+
+## Interface Gráfica
+
+A interface gráfica é construída com o Tkinter e exibe os seguintes elementos:
+
+1. **Botões de Controle**:
+   - **Upload de Imagem**: Carregar uma nova imagem para aplicar os efeitos.
+   - **Reset**: Restaurar os valores dos controles para os padrões iniciais.
+   - **Fechar**: Encerrar a aplicação.
+
+2. **Trackbars (Sliders)**:
+   - **Brilho**: Ajusta o brilho da imagem.
+   - **Saturação**: Modifica a saturação das cores.
+   - **Contraste**: Ajusta a diferença entre as áreas claras e escuras.
+   - **Desfoque**: Aplica desfoque na imagem.
+
+As trackbars permitem ajustar interativamente os parâmetros da imagem em tempo real.
+
+3. **Área de Exibição de Imagem**:
+   - A imagem carregada é exibida no centro da interface, com a possibilidade de aplicar os ajustes diretamente.
+
+---
+
+## ⚙ Instalação
+
+### Pré-requisitos
+Certifique-se de ter o Python 3.x instalado. Além disso, instale as dependências necessárias:
 
 ```bash
-pip install opencv-python numpy
+pip install opencv-python numpy pillow
 ```
 
-## Como Usar
+### Como Executar
+Clone este repositório e execute o script principal:
 
-1. Clone o repositório:
-
-    ```bash
-    git clone https://github.com/seu-usuario/nome-do-repositorio.git
-    cd nome-do-repositorio
-    ```
-
-2. Execute o código Python:
-
-    ```bash
-    python editor_imagem.py
-    ```
-
-3. O código irá abrir uma janela onde você pode ajustar os parâmetros usando as **trackbars** (barras deslizantes):
-   - **Brilho**: Ajuste o brilho da imagem.
-   - **Saturação**: Aumente ou diminua a saturação das cores.
-   - **Contraste**: Modifique o contraste da imagem.
-   - **Desfoque**: Aplique desfoque (blur) na imagem.
-
-4. Pressione a tecla `q` para sair do editor.
-
-### Exemplo de Saída
-
-O editor de imagem permite visualizar a alteração em tempo real. A seguir, a interface mostra uma imagem original e os efeitos aplicados após ajustar os controles deslizantes.
-
-## 🗂 Código
-
-O código principal é dividido em duas funções principais:
-
-- **ajustar_imagem**: Aplica as alterações de brilho, saturação, contraste e desfoque na imagem.
-- **on_change**: Função callback chamada sempre que o usuário altera os controles deslizantes.
-
-### Exemplo de código:
-
-```python
-import cv2
-import numpy as np
-
-def ajustar_imagem(img, brilho, saturacao, contraste, blur):
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    h, s, v = cv2.split(hsv)
-
-    # Ajustar brilho
-    v = cv2.add(v, brilho)
-    v = np.clip(v, 0, 255)
-
-    # Ajustar saturacao
-    s = cv2.add(s, saturacao)
-    s = np.clip(s, 0, 255)
-
-    # Combinar HSV de volta
-    hsv = cv2.merge((h, s, v))
-    ajustada = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-
-    # Ajustar contraste
-    ajustada = cv2.convertScaleAbs(ajustada, alpha=contraste, beta=0)
-
-    # Aplicar desfoque
-    if blur > 0:
-        ajustada = cv2.GaussianBlur(ajustada, (2 * blur + 1, 2 * blur + 1), 0)
-
-    return ajustada
-
-def on_change(val):
-    brilho = cv2.getTrackbarPos("Brilho", "Editor") - 100
-    saturacao = cv2.getTrackbarPos("Saturacao", "Editor") - 100
-    contraste = cv2.getTrackbarPos("Contraste", "Editor") / 50.0
-    blur = cv2.getTrackbarPos("Desfoque", "Editor")
-
-    img_ajustada = ajustar_imagem(img_original, brilho, saturacao, contraste, blur)
-    cv2.imshow("Editor", img_ajustada)
+```bash
+python main.py
 ```
+
+---
+
+## Explicação Técnica
+
+A manipulação de imagem é feita principalmente usando a biblioteca **OpenCV**. A imagem é carregada em formato BGR (Blue, Green, Red) e, para ajustes como brilho e saturação, convertemos a imagem para o modelo de cor **HSV** (Hue, Saturation, Value). Isso nos permite manipular mais facilmente o brilho e a saturação separadamente, sem afetar a tonalidade da imagem.
+
+- **Brilho**: É ajustado somando ou subtraindo um valor da componente **Value (V)** da imagem no espaço HSV. A função `np.clip` é usada para garantir que os valores resultantes fiquem dentro da faixa válida de 0 a 255.
+  
+- **Saturação**: Similar ao brilho, a saturação é ajustada modificando a componente **Saturation (S)** da imagem no espaço HSV, utilizando também a função `np.clip` para manter os valores válidos.
+
+- **Contraste**: O contraste é ajustado multiplicando os valores dos pixels pela constante de contraste, que é aplicada na imagem depois da conversão para o espaço de cor RGB.
+
+- **Desfoque**: A função `cv2.GaussianBlur` aplica um filtro de desfoque gaussiano à imagem, suavizando as transições entre os pixels.
+
+Cada ajuste é aplicado individualmente, permitindo ao usuário ver o efeito em tempo real através da interface gráfica.
