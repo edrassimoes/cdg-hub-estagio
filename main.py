@@ -1,55 +1,10 @@
 import cv2
-import numpy as np
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
+from ajustes import on_change, reset_image
 
-def ajustar_imagem(img, brilho, saturacao, contraste, blur):
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    h, s, v = cv2.split(hsv)
-
-    # Ajustar brilho
-    v = cv2.add(v, brilho)
-    v = np.clip(v, 0, 255)
-
-    # Ajustar saturacao
-    s = cv2.add(s, saturacao)
-    s = np.clip(s, 0, 255)
-
-    # Combinar HSV de volta
-    hsv = cv2.merge((h, s, v))
-    ajustada = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-
-    # Ajustar contraste
-    ajustada = cv2.convertScaleAbs(ajustada, alpha=contraste, beta=0)
-
-    # Aplicar desfoque
-    if blur > 0:
-        ajustada = cv2.GaussianBlur(ajustada, (2 * blur + 1, 2 * blur + 1), 0)
-
-    return ajustada
-
-def on_change(val):
-    brilho = brilho_scale.get() - 100
-    saturacao = saturacao_scale.get() - 100
-    contraste = contraste_scale.get() / 50.0
-    blur = desfoque_scale.get()
-
-    img_ajustada = ajustar_imagem(img_atual, brilho, saturacao, contraste, blur)
-    mostrar_imagem_tk(img_ajustada)
-
-def reset_image():
-    # Resetar valores das trackbars
-    brilho_scale.set(100)
-    saturacao_scale.set(100)
-    contraste_scale.set(50)
-    desfoque_scale.set(0)
-
-    # Atualiza os ajustes para a nova imagem
-    on_change(0)
-
-def mostrar_imagem_tk(img):
-
+def mostrar_imagem_tk(img, label_imagem):
     # Converter imagem OpenCV (BGR) para RGB
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img_pil = Image.fromarray(img_rgb)
@@ -97,72 +52,56 @@ def abrir_imagem():
             img_original = nova_imagem_com_borda
             img_atual[:] = nova_imagem_com_borda
 
-            reset_image()
+            reset_image(brilho_scale, saturacao_scale, contraste_scale, desfoque_scale, lambda val: on_change(brilho_scale, saturacao_scale, contraste_scale, desfoque_scale, img_atual, label_imagem, mostrar_imagem_tk))
 
 def fechar_aplicacao():
     global running
     running = False
     root.destroy()
 
-# Configurar Tkinter
+# Configura o Tkinter
 root = tk.Tk()
 root.title("Controle da Aplicação")
 root.geometry("1300x900")
 
-# Criar um Frame para os botões
+# Gera os botões
 frame_botoes = tk.Frame(root)
 frame_botoes.pack(side=tk.BOTTOM, pady=20)
-
-# Botões de controle
 btn_upload = tk.Button(frame_botoes, text="Upload de Imagem", command=abrir_imagem)
 btn_upload.grid(row=0, column=0, padx=10)
-
-btn_reset = tk.Button(frame_botoes, text="Reset", command=reset_image)
+btn_reset = tk.Button(frame_botoes, text="Reset", command=lambda: reset_image(brilho_scale, saturacao_scale, contraste_scale, desfoque_scale, lambda val: on_change(brilho_scale, saturacao_scale, contraste_scale, desfoque_scale, img_atual, label_imagem, mostrar_imagem_tk)))
 btn_reset.grid(row=0, column=1, padx=10)
-
 btn_fechar = tk.Button(frame_botoes, text="Fechar", command=fechar_aplicacao)
 btn_fechar.grid(row=0, column=2, padx=10)
 
-# Criar um Frame para as trackbars, logo abaixo dos botões
+# Gera as trackbars
 frame_controles = tk.Frame(root)
 frame_controles.pack(side=tk.TOP, pady=10)
-
-# Criar escalas para brilho, saturação, contraste e desfoque
-brilho_scale = tk.Scale(frame_controles, from_=0, to=200, orient="horizontal", label="Brilho", command=on_change)
+brilho_scale = tk.Scale(frame_controles, from_=0, to=200, orient="horizontal", label="Brilho", command=lambda val: on_change(brilho_scale, saturacao_scale, contraste_scale, desfoque_scale, img_atual, label_imagem, mostrar_imagem_tk))
 brilho_scale.set(100)
 brilho_scale.pack(side=tk.LEFT, padx=5)
-
-saturacao_scale = tk.Scale(frame_controles, from_=0, to=200, orient="horizontal", label="Saturação", command=on_change)
+saturacao_scale = tk.Scale(frame_controles, from_=0, to=200, orient="horizontal", label="Saturação", command=lambda val: on_change(brilho_scale, saturacao_scale, contraste_scale, desfoque_scale, img_atual, label_imagem, mostrar_imagem_tk))
 saturacao_scale.set(100)
 saturacao_scale.pack(side=tk.LEFT, padx=5)
-
-contraste_scale = tk.Scale(frame_controles, from_=0, to=100, orient="horizontal", label="Contraste", command=on_change)
+contraste_scale = tk.Scale(frame_controles, from_=0, to=100, orient="horizontal", label="Contraste", command=lambda val: on_change(brilho_scale, saturacao_scale, contraste_scale, desfoque_scale, img_atual, label_imagem, mostrar_imagem_tk))
 contraste_scale.set(50)
 contraste_scale.pack(side=tk.LEFT, padx=5)
-
-desfoque_scale = tk.Scale(frame_controles, from_=0, to=20, orient="horizontal", label="Desfoque", command=on_change)
+desfoque_scale = tk.Scale(frame_controles, from_=0, to=20, orient="horizontal", label="Desfoque", command=lambda val: on_change(brilho_scale, saturacao_scale, contraste_scale, desfoque_scale, img_atual, label_imagem, mostrar_imagem_tk))
 desfoque_scale.set(0)
 desfoque_scale.pack(side=tk.LEFT, padx=5)
 
-# Criar um Frame para exibir a imagem
+# Gera a imagem inicial
 frame_imagem = tk.Frame(root)
 frame_imagem.pack(side=tk.TOP, pady=20)
-
-# Label para exibir a imagem do OpenCV
 label_imagem = tk.Label(frame_imagem)
 label_imagem.pack()
-
-# Carregar imagem inicial
 caminho_inicial = 'imagens/cachorro.jpg'
 img_original = cv2.imread(caminho_inicial)
 if img_original is None:
     print("Imagem inicial não encontrada!")
     exit()
-
 img_atual = img_original.copy()
+on_change(brilho_scale, saturacao_scale, contraste_scale, desfoque_scale, img_atual, label_imagem, mostrar_imagem_tk)
 
-# Inicializar imagem
-on_change(0)
-
-# Iniciar interface gráfica do Tkinter
+# Inicia a interface gráfica
 root.mainloop()
