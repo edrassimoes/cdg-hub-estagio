@@ -2,8 +2,7 @@ import cv2
 import numpy as np
 import tkinter as tk
 from tkinter import filedialog
-from PIL import Image, ImageTk  # Usando Pillow (PIL é agora uma versão antiga)
-from threading import Thread
+from PIL import Image, ImageTk
 
 def ajustar_imagem(img, brilho, saturacao, contraste, blur):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -31,33 +30,34 @@ def ajustar_imagem(img, brilho, saturacao, contraste, blur):
     return ajustada
 
 def on_change(val):
-    brilho = cv2.getTrackbarPos("Brilho", "Editor") - 100
-    saturacao = cv2.getTrackbarPos("Saturacao", "Editor") - 100
-    contraste = cv2.getTrackbarPos("Contraste", "Editor") / 50.0
-    blur = cv2.getTrackbarPos("Desfoque", "Editor")
+    brilho = brilho_scale.get() - 100
+    saturacao = saturacao_scale.get() - 100
+    contraste = contraste_scale.get() / 50.0
+    blur = desfoque_scale.get()
 
     img_ajustada = ajustar_imagem(img_atual, brilho, saturacao, contraste, blur)
     mostrar_imagem_tk(img_ajustada)
 
 def reset_image():
-    # Resetar trackbars
-    cv2.setTrackbarPos("Brilho", "Editor", 100)
-    cv2.setTrackbarPos("Saturacao", "Editor", 100)
-    cv2.setTrackbarPos("Contraste", "Editor", 50)
-    cv2.setTrackbarPos("Desfoque", "Editor", 0)
+    # Resetar valores das trackbars
+    brilho_scale.set(100)
+    saturacao_scale.set(100)
+    contraste_scale.set(50)
+    desfoque_scale.set(0)
 
     # Atualiza os ajustes para a nova imagem
     on_change(0)
 
 def mostrar_imagem_tk(img):
+
     # Converter imagem OpenCV (BGR) para RGB
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img_pil = Image.fromarray(img_rgb)  # Converte para imagem PIL (agora utilizando Pillow)
-    img_tk = ImageTk.PhotoImage(img_pil)  # Converte para formato compatível com Tkinter
+    img_pil = Image.fromarray(img_rgb)
+    img_tk = ImageTk.PhotoImage(img_pil)
 
     # Atualizar a imagem no label
     label_imagem.config(image=img_tk)
-    label_imagem.image = img_tk  # Necessário para manter referência
+    label_imagem.image = img_tk
 
 def abrir_imagem():
     global img_atual, img_original
@@ -107,11 +107,11 @@ def fechar_aplicacao():
 # Configurar Tkinter
 root = tk.Tk()
 root.title("Controle da Aplicação")
-root.geometry("800x600")
+root.geometry("1300x900")
 
-# Criar frame para os botões
+# Criar um Frame para os botões
 frame_botoes = tk.Frame(root)
-frame_botoes.pack(side=tk.TOP, pady=10)
+frame_botoes.pack(side=tk.BOTTOM, pady=20)
 
 # Botões de controle
 btn_upload = tk.Button(frame_botoes, text="Upload de Imagem", command=abrir_imagem)
@@ -123,9 +123,34 @@ btn_reset.grid(row=0, column=1, padx=10)
 btn_fechar = tk.Button(frame_botoes, text="Fechar", command=fechar_aplicacao)
 btn_fechar.grid(row=0, column=2, padx=10)
 
+# Criar um Frame para as trackbars, logo abaixo dos botões
+frame_controles = tk.Frame(root)
+frame_controles.pack(side=tk.TOP, pady=10)
+
+# Criar escalas para brilho, saturação, contraste e desfoque
+brilho_scale = tk.Scale(frame_controles, from_=0, to=200, orient="horizontal", label="Brilho", command=on_change)
+brilho_scale.set(100)
+brilho_scale.pack(side=tk.LEFT, padx=5)
+
+saturacao_scale = tk.Scale(frame_controles, from_=0, to=200, orient="horizontal", label="Saturação", command=on_change)
+saturacao_scale.set(100)
+saturacao_scale.pack(side=tk.LEFT, padx=5)
+
+contraste_scale = tk.Scale(frame_controles, from_=0, to=100, orient="horizontal", label="Contraste", command=on_change)
+contraste_scale.set(50)
+contraste_scale.pack(side=tk.LEFT, padx=5)
+
+desfoque_scale = tk.Scale(frame_controles, from_=0, to=20, orient="horizontal", label="Desfoque", command=on_change)
+desfoque_scale.set(0)
+desfoque_scale.pack(side=tk.LEFT, padx=5)
+
+# Criar um Frame para exibir a imagem
+frame_imagem = tk.Frame(root)
+frame_imagem.pack(side=tk.TOP, pady=20)
+
 # Label para exibir a imagem do OpenCV
-label_imagem = tk.Label(root)
-label_imagem.pack(pady=10)
+label_imagem = tk.Label(frame_imagem)
+label_imagem.pack()
 
 # Carregar imagem inicial
 caminho_inicial = 'imagens/cachorro.jpg'
@@ -135,18 +160,6 @@ if img_original is None:
     exit()
 
 img_atual = img_original.copy()
-
-# Criar janela do editor
-cv2.namedWindow("Editor")
-cv2.createTrackbar("Brilho", "Editor", 0, 200, on_change)
-cv2.createTrackbar("Saturacao", "Editor", 0, 200, on_change)
-cv2.createTrackbar("Contraste", "Editor", 0, 100, on_change)
-cv2.createTrackbar("Desfoque", "Editor", 0, 20, on_change)
-
-cv2.setTrackbarPos("Brilho", "Editor", 100)
-cv2.setTrackbarPos("Saturacao", "Editor", 100)
-cv2.setTrackbarPos("Contraste", "Editor", 50)
-cv2.setTrackbarPos("Desfoque", "Editor", 0)
 
 # Inicializar imagem
 on_change(0)
