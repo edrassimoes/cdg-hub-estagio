@@ -1,4 +1,4 @@
-# 🖼 Projeto de Efeitos de Imagem
+# 🖼 Projeto de efeitos de imagem com OpenCV
 
 Este projeto permite a aplicação de diferentes efeitos de imagem, como ajuste de brilho, saturação, contraste e desfoque, usando a biblioteca OpenCV. A interface gráfica foi desenvolvida com Tkinter, permitindo a interação simples e intuitiva com os ajustes.
 
