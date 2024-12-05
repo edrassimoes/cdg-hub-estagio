@@ -1,25 +1,9 @@
 import cv2
 import numpy as np
+import tkinter as tk
+from threading import Thread
 
 def ajustar_imagem(img, brilho, saturacao, contraste, blur):
-    """
-    Ajusta os parâmetros de brilho, saturação, contraste e desfoque de uma imagem.
-
-    Esta função converte a imagem de BGR para HSV para ajustar o brilho e a saturação,
-    e depois converte de volta para BGR. Em seguida, aplica um ajuste de contraste utilizando
-    a função convertScaleAbs e, se solicitado, aplica um desfoque gaussiano na imagem.
-
-    Parâmetros:
-    img (ndarray): A imagem de entrada no formato BGR.
-    brilho (int): O valor de ajuste de brilho. Pode ser negativo para diminuir o brilho.
-    saturacao (int): O valor de ajuste de saturação. Pode ser negativo para diminuir a saturação.
-    contraste (float): O fator de contraste a ser aplicado, onde 1.0 é o valor original.
-    blur (int): O raio do desfoque gaussiano a ser aplicado. Se maior que 0, o desfoque é aplicado.
-
-    Retorna:
-    ndarray: A imagem ajustada após as modificações de brilho, saturação, contraste e desfoque.
-    """
-
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     h, s, v = cv2.split(hsv)
 
@@ -45,15 +29,6 @@ def ajustar_imagem(img, brilho, saturacao, contraste, blur):
     return ajustada
 
 def on_change(val):
-    """
-    Função de callback para ser chamada sempre que um controle deslizante (trackbar) for alterado.
-
-    Essa função captura os valores ajustados nos controles de brilho, saturação, contraste e desfoque,
-    chama a função `ajustar_imagem` para aplicar essas modificações e exibe a imagem resultante.
-
-    Parâmetros:
-    val (int): Valor do controle deslizante (não utilizado diretamente, mas necessário para o callback).
-    """
     brilho = cv2.getTrackbarPos("Brilho", "Editor") - 100
     saturacao = cv2.getTrackbarPos("Saturacao", "Editor") - 100
     contraste = cv2.getTrackbarPos("Contraste", "Editor") / 50.0
@@ -62,36 +37,53 @@ def on_change(val):
     img_ajustada = ajustar_imagem(img_original, brilho, saturacao, contraste, blur)
     cv2.imshow("Editor", img_ajustada)
 
+def fechar_aplicacao():
+    global running
+    running = False
+    root.destroy()
+    cv2.destroyAllWindows()
+
+def iniciar_editor():
+    global running
+    while running:
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q'):
+            fechar_aplicacao()
+            break
+
+# Configurar Tkinter
+root = tk.Tk()
+root.title("Controle da Aplicação")
+root.geometry("200x100")
+btn_fechar = tk.Button(root, text="Fechar", command=fechar_aplicacao)
+btn_fechar.pack(expand=True)
+
 # Carregar uma imagem
-# caminho = input('Digite o caminho para onde a imagem se encontra: ')
 caminho = 'imagens/cachorro.jpg'
 img_original = cv2.imread(caminho)
 if img_original is None:
-    print("Imagem nao encontrada!")
+    print("Imagem não encontrada!")
     exit()
 
-# Cria a janela
+# Criar janela do editor
 cv2.namedWindow("Editor")
-
-# Crie todas as barras deslizantes sem ponteiros de valor
 cv2.createTrackbar("Brilho", "Editor", 0, 200, on_change)
 cv2.createTrackbar("Saturacao", "Editor", 0, 200, on_change)
 cv2.createTrackbar("Contraste", "Editor", 0, 100, on_change)
 cv2.createTrackbar("Desfoque", "Editor", 0, 20, on_change)
 
-# Determina valores iniciais para as trackbars
 cv2.setTrackbarPos("Brilho", "Editor", 100)
 cv2.setTrackbarPos("Saturacao", "Editor", 100)
 cv2.setTrackbarPos("Contraste", "Editor", 50)
 cv2.setTrackbarPos("Desfoque", "Editor", 0)
 
-# Chama a função on_change, inicializando a imagem
+# Inicializar imagem
 on_change(0)
 
-# Loop principal
-while True:
-    key = cv2.waitKey(1) & 0xFF
-    if key == ord('q'):
-        break
+# Executar o editor em uma thread separada
+running = True
+thread_editor = Thread(target=iniciar_editor)
+thread_editor.start()
 
-cv2.destroyAllWindows()
+# Iniciar interface gráfica do Tkinter
+root.mainloop()
