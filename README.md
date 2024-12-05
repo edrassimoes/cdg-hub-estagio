@@ -43,7 +43,7 @@ Com isso, cada pixel pode representar mais de 16 milhões de combinações de co
 
 ---
 
-## Interface Gráfica:
+## Interface Gráfica
 
 A interface gráfica é construída com o Tkinter e exibe os seguintes elementos:
 
@@ -65,7 +65,7 @@ As trackbars permitem ajustar interativamente os parâmetros da imagem em tempo 
 
 ---
 
-## ⚙ Instalação:
+## ⚙ Instalação
 
 ### Pré-requisitos
 Certifique-se de ter o Python 3.x instalado. Além disso, instale as dependências necessárias:
@@ -83,7 +83,7 @@ python main.py
 
 ---
 
-## Explicação Técnica:
+## Explicação Técnica
 
 A manipulação de imagem é feita principalmente usando a biblioteca **OpenCV**. A imagem é carregada em formato BGR (Blue, Green, Red) e, para ajustes como brilho e saturação, convertemos a imagem para o modelo de cor **HSV** (Hue, Saturation, Value). Isso nos permite manipular mais facilmente o brilho e a saturação separadamente, sem afetar a tonalidade da imagem.
 
