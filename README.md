@@ -1,9 +1,8 @@
-# 🖼 Projeto de Efeitos de Imagem
+# 🖼 Projeto - Efeitos de imagem
 
 Este projeto permite a aplicação de diferentes efeitos de imagem, como ajuste de brilho, saturação, contraste e desfoque, usando a biblioteca OpenCV. A interface gráfica foi desenvolvida com Tkinter, permitindo a interação simples e intuitiva com os ajustes.
 
----
-## Como funciona?
+## 💡 Como funciona?
 As imagens digitais, como as que manipuladas com o OpenCV, seguem geralmente o modelo RGB (Red, Green, Blue - Vermelho, Verde, Azul), onde cada pixel da imagem é composto por uma combinação desses três canais de cor e cada um destes canais é representado por 8 bits.
 
 Outro modelo muito utilizado para processamento de imagens é o HSV (Hue, Saturation, Value - Matiz, Saturação, Brilho). Nesse modelo, as cores são representadas de forma diferente:
@@ -41,9 +40,7 @@ No modelo RGB, por exemplo, cada pixel é reprentado por 24 bits, onde:
 
 Com isso, cada pixel pode representar mais de 16 milhões de combinações de cores diferentes.
 
----
-
-## Interface Gráfica
+## 🖥️ Interface Gráfica
 
 A interface gráfica é construída com o Tkinter e exibe os seguintes elementos:
 
@@ -63,9 +60,7 @@ As trackbars permitem ajustar interativamente os parâmetros da imagem em tempo 
 3. **Área de Exibição de Imagem**:
    - A imagem carregada é exibida no centro da interface, com a possibilidade de aplicar os ajustes diretamente.
 
----
-
-## ⚙ Instalação
+## ⚙️ Instalação
 
 ### Pré-requisitos
 Certifique-se de ter o Python 3.x instalado. Além disso, instale as dependências necessárias:
@@ -81,9 +76,7 @@ Clone este repositório e execute o script principal:
 python main.py
 ```
 
----
-
-## Explicação Técnica
+## 📋 Explicação Técnica
 
 A manipulação de imagem é feita principalmente usando a biblioteca **OpenCV**. A imagem é carregada em formato BGR (Blue, Green, Red) e, para ajustes como brilho e saturação, convertemos a imagem para o modelo de cor **HSV** (Hue, Saturation, Value). Isso nos permite manipular mais facilmente o brilho e a saturação separadamente, sem afetar a tonalidade da imagem.
 
